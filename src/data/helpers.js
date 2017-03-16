@@ -23,6 +23,7 @@ function getFieldsFromArray(array) {
   const dataKeys = {type: 'array'}
   const fields = {}
   map(array, entry => {
+    // if array is an array of objects or other arrays
     if (typeof entry === 'object') {
       const entryKeys = keys(entry)
       map(entryKeys, (key) => {
@@ -37,11 +38,10 @@ function getFieldsFromArray(array) {
           fields[key] = {type: keyType}
         }
       })
-    } else {
-      fields[entry] = {type: typeof entry}
+      dataKeys.fields = fields
     }
   })
-  dataKeys.fields = fields
+
   return dataKeys
 }
 
@@ -67,6 +67,5 @@ export function parseDataAndGetKeys(file) {
     })
   })
 
-  console.log('datakeys:',dataKeys)
-
+  return dataKeys
 }
