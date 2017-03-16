@@ -1,36 +1,34 @@
 import {map, keys, assign} from 'lodash'
 
-function mapKeysOfObject(object, isArray) {
-  const children = {}
+function getFieldsFromObject(object, isArray) {
+  const fields = {}
   map(object, (val, key) => {
-    console.log(key)
     const valType = typeof val
+    fields[key] = {type: valType}
     if (valType === 'object'){
       if (val instanceof Array) {
-        console.log(`${key} is array`)
-        const children = mapArray(val)
-        children[key] = mapArray(val)
+        fields[key] = getFieldsFromArray(val)
       } else {
-        children[key] = mapKeysOfObject(val)
+        fields[key].fields = getFieldsFromObject(val)
       }
-    } else {
-      children[key] = typeof val
     }
   })
 
-  return children
+  return fields
 }
 
-function mapArray(array) {
+function getFieldsFromArray(array) {
   const dataKeys = {type: 'array'}
-  const children = {}
+  const fields = {}
   map(array, entry => {
+    console.log(entry)
     const entryKeys = keys(entry)
-    return map(entryKeys, key => {
-      return children[key] = typeof key
+    map(entryKeys, (key) => {
+      const keyType = typeof entry[key]
+      fields[key] = {type: keyType}
     })
   })
-  dataKeys.children = children
+  dataKeys.fields = fields
   return dataKeys
 }
 
@@ -41,14 +39,14 @@ export function parseDataAndGetKeys(file) {
   map(data, entry => {
     const entryKeys = keys(entry)
     return map(entryKeys, key => {
-      const keyType = typeof entry[key]
+      const entryField = entry[key]
+      const keyType = typeof entryField
       dataKeys[key] = {type: keyType}
       if (keyType === 'object'){
         if (entry[key] instanceof Array) {
-          const children = mapArray(entry[key])
-          dataKeys[key].children = mapArray(entry[key])
+          dataKeys[key].fields = getFieldsFromArray(entryField)
         } else {
-          dataKeys[key].children = mapKeysOfObject(entry[key])
+          dataKeys[key].fields = getFieldsFromObject(entryField)
         }
       }
     })
