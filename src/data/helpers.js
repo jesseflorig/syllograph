@@ -1,13 +1,17 @@
-import {map, keys, assign} from 'lodash'
+import {map, keys, assign, merge} from 'lodash'
 
 function getFieldsFromObject(object, isArray) {
   const fields = {}
   map(object, (val, key) => {
     const valType = typeof val
+
     fields[key] = {type: valType}
     if (valType === 'object'){
       if (val instanceof Array) {
+        console.log('key is',key)
+        console.log('fields before:',fields[key])
         fields[key] = getFieldsFromArray(val)
+        console.log('fields after',fields[key])
       } else {
         fields[key].fields = getFieldsFromObject(val)
       }
@@ -21,7 +25,6 @@ function getFieldsFromArray(array) {
   const dataKeys = {type: 'array'}
   const fields = {}
   map(array, entry => {
-    console.log(entry)
     const entryKeys = keys(entry)
     map(entryKeys, (key) => {
       const keyType = typeof entry[key]
@@ -41,17 +44,23 @@ export function parseDataAndGetKeys(file) {
     return map(entryKeys, key => {
       const entryField = entry[key]
       const keyType = typeof entryField
-      dataKeys[key] = {type: keyType}
+      if(!dataKeys[key]) {
+        dataKeys[key] = {type: keyType}
+      }
       if (keyType === 'object'){
         if (entry[key] instanceof Array) {
-          dataKeys[key].fields = getFieldsFromArray(entryField)
+          console.log('before',dataKeys[key].fields)
+          dataKeys[key].fields = merge(dataKeys[key].fields,getFieldsFromArray(entryField))
+          console.log('after',dataKeys[key].fields)
         } else {
-          dataKeys[key].fields = getFieldsFromObject(entryField)
+          console.log('calling')
+          console.log('key is', key)
+          dataKeys[key].fields = merge(dataKeys[key].fields, getFieldsFromObject(entryField))
         }
       }
     })
   })
 
-  console.log(dataKeys)
+  console.log('datakeys:',dataKeys)
 
 }
