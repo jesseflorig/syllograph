@@ -1,9 +1,25 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {parseDataAndGetKeys} from './data/helpers'
 
 class App extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      keys: {}
+    }
+  }
+
+  componentWillMount () {
+    const keys = parseDataAndGetKeys('./testData.json')
+    this.setState({
+      keys: keys
+    })
+  }
+
   render() {
+    console.log(this.state)
     return (
       <div className="App">
         <div className="App-header">
