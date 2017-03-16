@@ -8,10 +8,8 @@ function getFieldsFromObject(object, isArray) {
     fields[key] = {type: valType}
     if (valType === 'object'){
       if (val instanceof Array) {
-        console.log('key is',key)
-        console.log('fields before:',fields[key])
+        console.log(val)
         fields[key] = getFieldsFromArray(val)
-        console.log('fields after',fields[key])
       } else {
         fields[key].fields = getFieldsFromObject(val)
       }
@@ -25,11 +23,23 @@ function getFieldsFromArray(array) {
   const dataKeys = {type: 'array'}
   const fields = {}
   map(array, entry => {
-    const entryKeys = keys(entry)
-    map(entryKeys, (key) => {
-      const keyType = typeof entry[key]
-      fields[key] = {type: keyType}
-    })
+    if (typeof entry === 'object') {
+      const entryKeys = keys(entry)
+      map(entryKeys, (key) => {
+        const keyType = typeof entry[key]
+        if (keyType === 'object'){
+          if (entry[key] instanceof Array) {
+            fields[key] = getFieldsFromArray(entry[key])
+          } else {
+            fields[key].fields = merge(fields[key].fields, getFieldsFromObject(entry[key]))
+          }
+        } else {
+          fields[key] = {type: keyType}
+        }
+      })
+    } else {
+      fields[entry] = {type: typeof entry}
+    }
   })
   dataKeys.fields = fields
   return dataKeys
@@ -49,12 +59,8 @@ export function parseDataAndGetKeys(file) {
       }
       if (keyType === 'object'){
         if (entry[key] instanceof Array) {
-          console.log('before',dataKeys[key].fields)
-          dataKeys[key].fields = merge(dataKeys[key].fields,getFieldsFromArray(entryField))
-          console.log('after',dataKeys[key].fields)
+          dataKeys[key].fields = merge(dataKeys[key].fields, getFieldsFromArray(entryField))
         } else {
-          console.log('calling')
-          console.log('key is', key)
           dataKeys[key].fields = merge(dataKeys[key].fields, getFieldsFromObject(entryField))
         }
       }
