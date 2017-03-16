@@ -10,8 +10,11 @@
         },
         {
           "Name": "Rufus",
-          "Type" : "Dog",
-          "Deceased": true
+          "Type": "Dog",
+          "Deceased": true,
+          "Food": [
+            "Soy"
+          ]
         }
       ],
       "Birthday": "06-07-1984"
@@ -24,7 +27,11 @@
       "Pets": [
         {
           "Name": "Princess Sparkles",
-          "Type": "Cat"
+          "Type": "Cat",
+          "Food": [
+            "Tuna",
+            "Kibble"
+          ]
         }
       ],
       "Birthday": "01-12-1990"

@@ -1,28 +1,47 @@
-import {map, reduce, keys, toPairs} from 'lodash'
+import {map, keys, assign, merge} from 'lodash'
 
-function mapKeysOfObject(object, isArray) {
-  const children = {}
+function getFieldsFromObject(object, isArray) {
+  const fields = {}
   map(object, (val, key) => {
     const valType = typeof val
+
+    fields[key] = {type: valType}
     if (valType === 'object'){
-      children[key] = mapKeysOfObject(val)
-    } else {
-      children[key] = typeof val
+      if (val instanceof Array) {
+        console.log(val)
+        fields[key] = getFieldsFromArray(val)
+      } else {
+        fields[key].fields = getFieldsFromObject(val)
+      }
     }
   })
 
-  return children
+  return fields
 }
 
-function mapArray(array) {
-  const dataKeys = {}
+function getFieldsFromArray(array) {
+  const dataKeys = {type: 'array'}
+  const fields = {}
   map(array, entry => {
-    const entryKeys = keys(entry)
-    return map(entryKeys, key => {
-      const keyType = typeof entry[key]
-      dataKeys[key] = keyType
-    })
+    // if array is an array of objects or other arrays
+    if (typeof entry === 'object') {
+      const entryKeys = keys(entry)
+      map(entryKeys, (key) => {
+        const keyType = typeof entry[key]
+        if (keyType === 'object'){
+          if (entry[key] instanceof Array) {
+            fields[key] = getFieldsFromArray(entry[key])
+          } else {
+            fields[key].fields = merge(fields[key].fields, getFieldsFromObject(entry[key]))
+          }
+        } else {
+          fields[key] = {type: keyType}
+        }
+      })
+      dataKeys.fields = fields
+    }
   })
+
   return dataKeys
 }
 
@@ -33,19 +52,20 @@ export function parseDataAndGetKeys(file) {
   map(data, entry => {
     const entryKeys = keys(entry)
     return map(entryKeys, key => {
-      const keyType = typeof entry[key]
-      dataKeys[key] = {type: keyType}
+      const entryField = entry[key]
+      const keyType = typeof entryField
+      if(!dataKeys[key]) {
+        dataKeys[key] = {type: keyType}
+      }
       if (keyType === 'object'){
-        const children = {}
         if (entry[key] instanceof Array) {
-          dataKeys[key].children = mapArray(entry[key])
+          dataKeys[key].fields = merge(dataKeys[key].fields, getFieldsFromArray(entryField))
         } else {
-          dataKeys[key].children = mapKeysOfObject(entry[key])
+          dataKeys[key].fields = merge(dataKeys[key].fields, getFieldsFromObject(entryField))
         }
       }
     })
   })
 
-  console.log(dataKeys)
-
+  return dataKeys
 }
