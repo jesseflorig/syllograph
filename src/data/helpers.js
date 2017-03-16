@@ -9,8 +9,7 @@ function mapKeysOfObject(object, isArray) {
       if (val instanceof Array) {
         console.log(`${key} is array`)
         const children = mapArray(val)
-        console.log(children)
-        // children[key] = mapArray(val) 
+        children[key] = mapArray(val)
       } else {
         children[key] = mapKeysOfObject(val)
       }
