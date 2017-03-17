@@ -1,0 +1,37 @@
+.field-group{
+  list-style: none;
+  display: flex;
+  flex-flow: column;
+  margin-top: .25rem;
+}
+
+.field-item.parent{
+
+}
+
+.field-item.child{
+  margin-left: 1rem;
+}
+
+.field-item a{
+  display: inline-block;
+  border-radius: 3px;
+  background-color: #eee;
+  padding: .5rem 1rem;
+}
+
+.field-item:not(:last-of-type){
+  margin-bottom: .25rem;
+}
+
+.field-group .child-group{
+  margin-left: 1rem;
+}
+
+.field-item-type{
+  font-size: .7rem;
+}
+
+.field-item-type.--string{
+  color: red;
+}
