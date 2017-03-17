@@ -1,4 +1,4 @@
-import {map, keys, assign, merge} from 'lodash'
+import {map, keys, merge} from 'lodash'
 
 function getFieldsFromObject(object, isArray) {
   const fields = {}
@@ -8,7 +8,6 @@ function getFieldsFromObject(object, isArray) {
     fields[key] = {type: valType}
     if (valType === 'object'){
       if (val instanceof Array) {
-        console.log(val)
         fields[key] = getFieldsFromArray(val)
       } else {
         fields[key].fields = getFieldsFromObject(val)
