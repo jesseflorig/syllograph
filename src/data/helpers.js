@@ -1,4 +1,4 @@
-import {map, keys, assign, merge} from 'lodash'
+import {map, keys, merge} from 'lodash'
 
 function getFieldsFromObject(object, isArray) {
   const fields = {}
