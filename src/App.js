@@ -1,34 +1,30 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {parseDataAndGetKeys} from './data/helpers'
+import KeyList from './components/keyList'
 
 class App extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      keys: {}
+      fields: {}
     }
   }
 
   componentWillMount () {
-    const keys = parseDataAndGetKeys('./testData.json')
+    const fields = parseDataAndGetKeys('./testData.json')
     this.setState({
-      keys: keys
+      fields: fields
     })
   }
 
   render() {
-    console.log(this.state)
+    const {fields} = this.state
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+        <div className="Fields">
+          <KeyList fields={fields}/>
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
       </div>
     );
   }
